@@ -1,0 +1,362 @@
+{
+  "name": "Class Assist",
+  "description": "LTI confusion tracking and study assistance widget",
+  "version": "1.0.0",
+  "states": [
+    {
+      "name": "Default",
+      "data": {
+        "courseName": "BIO 201: Cell Biology",
+        "view": "student",
+        "viewOptions": [
+          {
+            "value": "student",
+            "label": "Student view"
+          },
+          {
+            "value": "instructor",
+            "label": "Instructor view"
+          }
+        ],
+        "askOpen": false,
+        "metrics": {
+          "improvement": "22%"
+        },
+        "spike": {
+          "active": true,
+          "message": "8 students confused in last 2 minutes — consider pausing"
+        },
+        "chartData": [
+          { "label": "Slide 1", "confused": 15 },
+          { "label": "Slide 2", "confused": 8 },
+          { "label": "Slide 3", "confused": 25 },
+          { "label": "Slide 4", "confused": 12 },
+          { "label": "Slide 5", "confused": 30 }
+        ]
+      },
+      "ui": {
+        "type": "Card",
+        "size": "md",
+        "status": {
+          "text": "LTI 1.3 • SSO active • {{courseName}}"
+        },
+        "children": [
+          {
+            "type": "Col",
+            "gap": 4,
+            "children": [
+              {
+                "type": "Row",
+                "children": [
+                  {
+                    "type": "Title",
+                    "value": "Class Assist",
+                    "size": "sm"
+                  },
+                  {
+                    "type": "Spacer"
+                  },
+                  {
+                    "type": "Select",
+                    "name": "ui.view",
+                    "options": "{{viewOptions}}",
+                    "defaultValue": "{{view}}",
+                    "pill": true,
+                    "variant": "outline",
+                    "size": "sm",
+                    "onChangeAction": {
+                      "type": "view.set"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "Conditional",
+                "condition": "{{view === 'student'}}",
+                "children": [
+                  {
+                    "type": "Col",
+                    "gap": 4,
+                    "children": [
+                      {
+                        "type": "Row",
+                        "gap": 2,
+                        "children": [
+                          {
+                            "type": "Button",
+                            "label": "I'm Confused",
+                            "iconStart": "circle-question",
+                            "pill": true,
+                            "style": "default",
+                            "onClickAction": {
+                              "type": "confusion.ping"
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "label": "{{askOpen ? 'Close' : 'Ask a Question'}}",
+                            "variant": "outline",
+                            "pill": true,
+                            "iconStart": "{{askOpen ? 'chevron-left' : 'write'}}",
+                            "onClickAction": {
+                              "type": "ui.toggle",
+                              "payload": {
+                                "key": "askOpen"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Conditional",
+                        "condition": "{{askOpen}}",
+                        "children": [
+                          {
+                            "type": "Form",
+                            "onSubmitAction": {
+                              "type": "question.submit"
+                            },
+                            "children": [
+                              {
+                                "type": "Col",
+                                "gap": 2,
+                                "children": [
+                                  {
+                                    "type": "Textarea",
+                                    "name": "question.body",
+                                    "placeholder": "Type your question",
+                                    "required": true,
+                                    "rows": 3
+                                  },
+                                  {
+                                    "type": "Checkbox",
+                                    "name": "question.anonymous",
+                                    "label": "Ask anonymously",
+                                    "defaultChecked": true
+                                  },
+                                  {
+                                    "type": "Row",
+                                    "children": [
+                                      {
+                                        "type": "Spacer"
+                                      },
+                                      {
+                                        "type": "Button",
+                                        "submit": true,
+                                        "label": "Send",
+                                        "style": "primary",
+                                        "iconStart": "mail",
+                                        "pill": true
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Divider"
+                      },
+                      {
+                        "type": "Col",
+                        "gap": 3,
+                        "children": [
+                          {
+                            "type": "Row",
+                            "children": [
+                              {
+                                "type": "Text",
+                                "value": "Study tools",
+                                "size": "sm",
+                                "weight": "semibold"
+                              },
+                              {
+                                "type": "Spacer"
+                              },
+                              {
+                                "type": "Badge",
+                                "label": "Improved {{metrics.improvement}}",
+                                "color": "success"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "Row",
+                            "gap": 2,
+                            "children": [
+                              {
+                                "type": "Button",
+                                "label": "Quiz Me",
+                                "variant": "outline",
+                                "iconStart": "notebook-pencil",
+                                "pill": true,
+                                "onClickAction": {
+                                  "type": "study.quiz",
+                                  "payload": {
+                                    "focus": "confusion-zones"
+                                  }
+                                }
+                              },
+                              {
+                                "type": "Button",
+                                "label": "Explain Again",
+                                "variant": "outline",
+                                "iconStart": "lightbulb",
+                                "pill": true,
+                                "onClickAction": {
+                                  "type": "study.explain"
+                                }
+                              },
+                              {
+                                "type": "Button",
+                                "label": "Review Notes",
+                                "variant": "outline",
+                                "iconStart": "book-open",
+                                "pill": true,
+                                "onClickAction": {
+                                  "type": "study.notes"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Caption",
+                        "value": "Anonymous by default • FERPA/GDPR friendly",
+                        "color": "secondary"
+                      }
+                    ]
+                  }
+                ],
+                "else": [
+                  {
+                    "type": "Col",
+                    "gap": 4,
+                    "children": [
+                      {
+                        "type": "Row",
+                        "children": [
+                          {
+                            "type": "Text",
+                            "value": "Live confusion heatmap",
+                            "size": "sm",
+                            "weight": "semibold"
+                          },
+                          {
+                            "type": "Spacer"
+                          },
+                          {
+                            "type": "Button",
+                            "iconStart": "reload",
+                            "label": "Refresh",
+                            "variant": "outline",
+                            "pill": true,
+                            "onClickAction": {
+                              "type": "heatmap.refresh"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Chart",
+                        "data": "{{chartData}}",
+                        "series": [
+                          {
+                            "type": "bar",
+                            "dataKey": "confused",
+                            "label": "% Confused",
+                            "color": "orange"
+                          }
+                        ],
+                        "xAxis": {
+                          "dataKey": "label"
+                        },
+                        "showYAxis": true
+                      },
+                      {
+                        "type": "Conditional",
+                        "condition": "{{spike.active}}",
+                        "children": [
+                          {
+                            "type": "Row",
+                            "padding": {
+                              "y": 2,
+                              "x": 2
+                            },
+                            "background": "yellow-100",
+                            "radius": "sm",
+                            "border": {
+                              "size": 1
+                            },
+                            "children": [
+                              {
+                                "type": "Icon",
+                                "name": "info"
+                              },
+                              {
+                                "type": "Text",
+                                "value": "{{spike.message}}",
+                                "size": "sm",
+                                "color": "warning"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Row",
+                        "gap": 2,
+                        "children": [
+                          {
+                            "type": "Button",
+                            "label": "Export CSV",
+                            "variant": "outline",
+                            "iconStart": "external-link",
+                            "pill": true,
+                            "onClickAction": {
+                              "type": "intervention.export"
+                            }
+                          },
+                          {
+                            "type": "Button",
+                            "label": "Notify via LMS",
+                            "variant": "outline",
+                            "iconStart": "mail",
+                            "pill": true,
+                            "onClickAction": {
+                              "type": "intervention.notify"
+                            }
+                          },
+                          {
+                            "type": "Spacer"
+                          },
+                          {
+                            "type": "Button",
+                            "label": "Assign quizzes",
+                            "style": "secondary",
+                            "pill": true,
+                            "onClickAction": {
+                              "type": "intervention.assign"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "Caption",
+                        "value": "SSO via LTI 1.3 • <100ms target • Sync on",
+                        "color": "secondary"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

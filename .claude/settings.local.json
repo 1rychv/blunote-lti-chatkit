@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_click",
+      "Bash(cd:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd ChatKit widget integration for BluNote LTI confusion tracking\n\n- Created class-assist.widget with student/instructor views\n- Implemented Widget UI components (Card, Button, Chart, etc.)\n- Added comprehensive integration documentation\n- Configured ChatKit session creation with widget state\n- Defined 9 AgentKit functions for widget actions\n- Set up backend structure for function handlers\n- Documented AgentKit workflow architecture\n\nGenerated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git checkout:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
