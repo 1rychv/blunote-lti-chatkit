@@ -49,6 +49,10 @@ await registerLTIRoutes(server);
 // Register ChatKit routes
 await registerChatKitRoutes(server);
 
+// Register chat routes (OpenAI Agents SDK)
+import chatRoutes from './routes/chat.js';
+await server.register(chatRoutes);
+
 const PORT = parseInt(process.env.PORT || '4000', 10);
 const HOST = process.env.HOST || '0.0.0.0';
 

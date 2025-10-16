@@ -1,0 +1,250 @@
+{
+  "version": "1.0",
+  "name": "ChatClone",
+  "template": "{\"type\":\"Card\",\"size\":\"md\",\"children\":[{\"type\":\"Col\",\"gap\":3,\"children\":[{\"type\":\"Row\",\"align\":\"center\",\"gap\":2,\"children\":[{\"type\":\"Icon\",\"name\":\"sparkle\",\"children\":[]},{\"type\":\"Title\",\"value\":{{ (title) | tojson }},\"size\":\"sm\",\"children\":[]},{\"type\":\"Spacer\",\"children\":[]},{\"type\":\"Button\",\"iconStart\":\"reload\",\"variant\":\"outline\",\"uniform\":true,\"onClickAction\":{\"type\":\"chat.reset\"},\"children\":[]}]},{\"type\":\"Divider\",\"children\":[]},{\"type\":\"ListView\",\"children\":[{%- set _c -%}{%-for item in messages -%},{\"type\":\"ListViewItem\",\"key\":{{ (item.id) | tojson }},\"align\":\"start\",\"gap\":3,\"children\":[{\"type\":\"Box\",\"size\":32,\"radius\":\"full\",\"align\":\"center\",\"justify\":\"center\",\"background\":{% if item.role === \"assistant\" %}\"purple\"{% else %}\"alpha-10\"{% endif %},\"children\":[{\"type\":\"Icon\",\"name\":{% if item.role === \"assistant\" %}\"sparkle\"{% else %}\"user\"{% endif %},\"color\":{% if item.role === \"assistant\" %}\"white\"{% else %}\"primary\"{% endif %},\"children\":[]}]},{\"type\":\"Col\",\"gap\":1,\"children\":[{\"type\":\"Badge\",\"label\":{% if item.role === \"assistant\" %}\"AI\"{% else %}\"You\"{% endif %},\"size\":\"sm\",\"children\":[]},{\"type\":\"Text\",\"value\":{{ (item.text) | tojson }},\"size\":\"sm\",\"children\":[]}]}]}{%-endfor-%}{%- endset -%}{{- (_c[1:] if _c and _c[0] == ',' else _c) -}}]},{\"type\":\"Divider\",\"children\":[]},{\"type\":\"Form\",\"onSubmitAction\":{\"type\":\"chat.send\"},\"children\":[{\"type\":\"Row\",\"align\":\"center\",\"gap\":2,\"children\":[{\"type\":\"Textarea\",\"name\":\"chat.input\",\"placeholder\":{{ (placeholder) | tojson }},\"rows\":3,\"required\":true,\"children\":[]},{\"type\":\"Button\",\"submit\":true,\"style\":\"primary\",\"iconStart\":\"play\",\"label\":{{ (sendLabel) | tojson }},\"children\":[]}]}]}]}]}",
+  "jsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "widget",
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "messages": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "role",
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        "minItems": 3
+      },
+      "placeholder": {
+        "type": "string"
+      },
+      "sendLabel": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "title",
+      "messages",
+      "placeholder",
+      "sendLabel"
+    ],
+    "additionalProperties": false
+  },
+  "outputJsonPreview": {
+    "type": "Card",
+    "size": "md",
+    "children": [
+      {
+        "type": "Col",
+        "gap": 3,
+        "children": [
+          {
+            "type": "Row",
+            "align": "center",
+            "gap": 2,
+            "children": [
+              {
+                "type": "Icon",
+                "name": "sparkle"
+              },
+              {
+                "type": "Title",
+                "value": "ChatGPT-style chat",
+                "size": "sm"
+              },
+              {
+                "type": "Spacer"
+              },
+              {
+                "type": "Button",
+                "iconStart": "reload",
+                "variant": "outline",
+                "uniform": true,
+                "onClickAction": {
+                  "type": "chat.reset"
+                }
+              }
+            ]
+          },
+          {
+            "type": "Divider"
+          },
+          {
+            "type": "ListView",
+            "children": [
+              {
+                "type": "ListViewItem",
+                "key": "m1",
+                "align": "start",
+                "gap": 3,
+                "children": [
+                  {
+                    "type": "Box",
+                    "size": 32,
+                    "radius": "full",
+                    "align": "center",
+                    "justify": "center",
+                    "background": "purple",
+                    "children": [
+                      {
+                        "type": "Icon",
+                        "name": "sparkle",
+                        "color": "white"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Col",
+                    "gap": 1,
+                    "children": [
+                      {
+                        "type": "Badge",
+                        "label": "AI",
+                        "size": "sm"
+                      },
+                      {
+                        "type": "Text",
+                        "value": "Hi! Ask me anything.",
+                        "size": "sm"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "ListViewItem",
+                "key": "m2",
+                "align": "start",
+                "gap": 3,
+                "children": [
+                  {
+                    "type": "Box",
+                    "size": 32,
+                    "radius": "full",
+                    "align": "center",
+                    "justify": "center",
+                    "background": "alpha-10",
+                    "children": [
+                      {
+                        "type": "Icon",
+                        "name": "user",
+                        "color": "primary"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Col",
+                    "gap": 1,
+                    "children": [
+                      {
+                        "type": "Badge",
+                        "label": "You",
+                        "size": "sm"
+                      },
+                      {
+                        "type": "Text",
+                        "value": "Explain quantum tunneling in simple terms.",
+                        "size": "sm"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "ListViewItem",
+                "key": "m3",
+                "align": "start",
+                "gap": 3,
+                "children": [
+                  {
+                    "type": "Box",
+                    "size": 32,
+                    "radius": "full",
+                    "align": "center",
+                    "justify": "center",
+                    "background": "purple",
+                    "children": [
+                      {
+                        "type": "Icon",
+                        "name": "sparkle",
+                        "color": "white"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Col",
+                    "gap": 1,
+                    "children": [
+                      {
+                        "type": "Badge",
+                        "label": "AI",
+                        "size": "sm"
+                      },
+                      {
+                        "type": "Text",
+                        "value": "It’s when tiny particles sometimes pass through barriers they couldn’t normally cross, because at very small scales they behave like waves.",
+                        "size": "sm"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Divider"
+          },
+          {
+            "type": "Form",
+            "onSubmitAction": {
+              "type": "chat.send"
+            },
+            "children": [
+              {
+                "type": "Row",
+                "align": "center",
+                "gap": 2,
+                "children": [
+                  {
+                    "type": "Textarea",
+                    "name": "chat.input",
+                    "placeholder": "Type a message…",
+                    "rows": 3,
+                    "required": true
+                  },
+                  {
+                    "type": "Button",
+                    "submit": true,
+                    "style": "primary",
+                    "iconStart": "play",
+                    "label": "Send"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "encodedWidget": "eyJpZCI6IjhiNDA2YWQ5LTA0MGItNGZhMi05N2Y1LTgyYTNmZjNkNmI4YyIsIm5hbWUiOiJDaGF0Q2xvbmUiLCJ2aWV3IjoiPENhcmQgc2l6ZT1cIm1kXCI-XG4gIDxDb2wgZ2FwPXszfT5cbiAgICA8Um93IGFsaWduPVwiY2VudGVyXCIgZ2FwPXsyfT5cbiAgICAgIDxJY29uIG5hbWU9XCJzcGFya2xlXCIgLz5cbiAgICAgIDxUaXRsZSB2YWx1ZT17dGl0bGV9IHNpemU9XCJzbVwiIC8-XG4gICAgICA8U3BhY2VyIC8-XG4gICAgICA8QnV0dG9uIGljb25TdGFydD1cInJlbG9hZFwiIHZhcmlhbnQ9XCJvdXRsaW5lXCIgdW5pZm9ybSBvbkNsaWNrQWN0aW9uPXt7IHR5cGU6IFwiY2hhdC5yZXNldFwiIH19IC8-XG4gICAgPC9Sb3c-XG4gICAgPERpdmlkZXIgLz5cbiAgICA8TGlzdFZpZXc-XG4gICAgICB7bWVzc2FnZXMubWFwKChpdGVtKSA9PiAoXG4gICAgICAgIDxMaXN0Vmlld0l0ZW0ga2V5PXtpdGVtLmlkfSBhbGlnbj1cInN0YXJ0XCIgZ2FwPXszfT5cbiAgICAgICAgICA8Qm94IHNpemU9ezMyfSByYWRpdXM9XCJmdWxsXCIgYWxpZ249XCJjZW50ZXJcIiBqdXN0aWZ5PVwiY2VudGVyXCIgYmFja2dyb3VuZD17aXRlbS5yb2xlID09PSBcImFzc2lzdGFudFwiID8gXCJwdXJwbGVcIiA6IFwiYWxwaGEtMTBcIn0-XG4gICAgICAgICAgICA8SWNvbiBuYW1lPXtpdGVtLnJvbGUgPT09IFwiYXNzaXN0YW50XCIgPyBcInNwYXJrbGVcIiA6IFwidXNlclwifSBjb2xvcj17aXRlbS5yb2xlID09PSBcImFzc2lzdGFudFwiID8gXCJ3aGl0ZVwiIDogXCJwcmltYXJ5XCJ9IC8-XG4gICAgICAgICAgPC9Cb3g-XG4gICAgICAgICAgPENvbCBnYXA9ezF9PlxuICAgICAgICAgICAgPEJhZGdlIGxhYmVsPXtpdGVtLnJvbGUgPT09IFwiYXNzaXN0YW50XCIgPyBcIkFJXCIgOiBcIllvdVwifSBzaXplPVwic21cIiAvPlxuICAgICAgICAgICAgPFRleHQgdmFsdWU9e2l0ZW0udGV4dH0gc2l6ZT1cInNtXCIgLz5cbiAgICAgICAgICA8L0NvbD5cbiAgICAgICAgPC9MaXN0Vmlld0l0ZW0-XG4gICAgICApKX1cbiAgICA8L0xpc3RWaWV3PlxuICAgIDxEaXZpZGVyIC8-XG4gICAgPEZvcm0gb25TdWJtaXRBY3Rpb249e3sgdHlwZTogXCJjaGF0LnNlbmRcIiB9fT5cbiAgICAgIDxSb3cgYWxpZ249XCJjZW50ZXJcIiBnYXA9ezJ9PlxuICAgICAgICA8VGV4dGFyZWEgbmFtZT1cImNoYXQuaW5wdXRcIiBwbGFjZWhvbGRlcj17cGxhY2Vob2xkZXJ9IHJvd3M9ezN9IHJlcXVpcmVkIC8-XG4gICAgICAgIDxCdXR0b24gc3VibWl0IHN0eWxlPVwicHJpbWFyeVwiIGljb25TdGFydD1cInBsYXlcIiBsYWJlbD17c2VuZExhYmVsfSAvPlxuICAgICAgPC9Sb3c-XG4gICAgPC9Gb3JtPlxuICA8L0NvbD5cbjwvQ2FyZD4iLCJkZWZhdWx0U3RhdGUiOnsidGl0bGUiOiJDaGF0R1BULXN0eWxlIGNoYXQiLCJtZXNzYWdlcyI6W3siaWQiOiJtMSIsInJvbGUiOiJhc3Npc3RhbnQiLCJ0ZXh0IjoiSGkhIEFzayBtZSBhbnl0aGluZy4ifSx7ImlkIjoibTIiLCJyb2xlIjoidXNlciIsInRleHQiOiJFeHBsYWluIHF1YW50dW0gdHVubmVsaW5nIGluIHNpbXBsZSB0ZXJtcy4ifSx7ImlkIjoibTMiLCJyb2xlIjoiYXNzaXN0YW50IiwidGV4dCI6Ikl04oCZcyB3aGVuIHRpbnkgcGFydGljbGVzIHNvbWV0aW1lcyBwYXNzIHRocm91Z2ggYmFycmllcnMgdGhleSBjb3VsZG7igJl0IG5vcm1hbGx5IGNyb3NzLCBiZWNhdXNlIGF0IHZlcnkgc21hbGwgc2NhbGVzIHRoZXkgYmVoYXZlIGxpa2Ugd2F2ZXMuIn1dLCJwbGFjZWhvbGRlciI6IlR5cGUgYSBtZXNzYWdl4oCmIiwic2VuZExhYmVsIjoiU2VuZCJ9LCJzdGF0ZXMiOltdfQ"
+}

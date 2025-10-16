@@ -17,6 +17,8 @@ import {
   Chart,
   Icon,
 } from './components/ui';
+import * as api from './lib/api';
+import { ChatPanel } from './components/ChatPanel';
 
 interface LTIContext {
   userId: string;
@@ -49,6 +51,7 @@ function App() {
     ltiContext.role === 'Instructor' ? 'instructor' : 'student'
   );
   const [askOpen, setAskOpen] = useState(false);
+  const [chatInitialMessage, setChatInitialMessage] = useState<string | undefined>();
 
   // Mock data
   const metrics: ConfusionMetrics = { improvement: '22%' };
@@ -81,40 +84,153 @@ function App() {
 
   const handleConfusionPulse = () => {
     console.log('Confusion pulse:', { courseId, slideId, topic, anonymous: true });
-    // TODO: Send to backend via WebSocket
+    setChatInitialMessage(`I'm confused about ${topic}`);
   };
 
   const handleQuestionToggle = (open: boolean) => {
     setAskOpen(open);
   };
 
-  const handleQuestionSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleQuestionSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const questionBody = formData.get('question.body') as string;
+    const anonymous = formData.get('question.anonymous') === 'on';
+
     console.log('Question submitted:', {
       courseId,
       slideId,
       topic,
-      question: formData.get('question.body'),
-      anonymous: formData.get('question.anonymous'),
+      question: questionBody,
+      anonymous,
     });
-    setAskOpen(false);
-    // TODO: Send to backend
+
+    try {
+      const result = await api.submitQuestion({
+        user_id: ltiContext.userId,
+        course_id: courseId,
+        question: questionBody,
+        anonymous,
+        topic,
+        slide_id: slideId,
+      });
+      console.log('Question saved:', result);
+      alert(result.response);
+      setAskOpen(false);
+    } catch (error) {
+      console.error('Failed to submit question:', error);
+      alert('Failed to submit question. Please try again.');
+    }
   };
 
   const handleStudyAction = (action: string, payload: Record<string, unknown>) => {
     console.log('Study action:', action, payload);
-    // TODO: Trigger AgentKit workflow
+    let message = '';
+    if (action === 'study.quiz') {
+      message = `Generate a quiz focused on ${payload.focus || 'confusion-zones'}`;
+    } else if (action === 'study.explain') {
+      message = `Explain ${payload.topic || topic} again`;
+    } else if (action === 'study.notes') {
+      message = `Show me notes for ${payload.topic || topic}`;
+    }
+    setChatInitialMessage(message);
   };
 
-  const handleInstructorAction = (action: string, payload: Record<string, unknown>) => {
+  const handleInstructorAction = async (action: string, payload: Record<string, unknown>) => {
     console.log('Instructor action:', action, payload);
-    // TODO: Trigger backend action
+    try {
+      let result;
+      if (action === 'heatmap.refresh') {
+        result = await api.getConfusionHeatmap({
+          user_id: ltiContext.userId,
+          course_id: courseId,
+          time_range: 'today',
+        });
+      } else if (action === 'intervention.export') {
+        result = await api.exportConfusionData({
+          user_id: ltiContext.userId,
+          course_id: courseId,
+          format: 'csv',
+        });
+      } else if (action === 'intervention.notify' || action === 'intervention.assign') {
+        result = await api.sendMessage({
+          message: `${action === 'intervention.notify' ? 'Send notifications' : 'Assign quizzes'} to confused students`,
+          user_id: ltiContext.userId,
+          course_id: courseId,
+          role: 'instructor',
+        });
+      }
+      if (result) {
+        console.log('Instructor action result:', result);
+        alert(result.response);
+      }
+    } catch (error) {
+      console.error('Failed to execute instructor action:', error);
+      alert('Action failed. Please try again.');
+    }
   };
 
   return (
-    <div style={{ padding: '1rem', maxWidth: '900px', margin: '0 auto' }}>
-      <Card size="md" status={{ text: statusText, icon: 'globe' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+      {/* Header */}
+      <header
+        style={{
+          backgroundColor: '#fff',
+          borderBottom: '1px solid #e5e7eb',
+          padding: '1rem 1.5rem',
+          position: 'sticky',
+          top: 0,
+          zIndex: 100,
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <Row>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '8px',
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 'bold',
+                  color: '#fff',
+                  fontSize: '18px',
+                }}
+              >
+                B
+              </div>
+              <div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: '#111827', lineHeight: '1.2' }}>
+                  BluNote
+                </div>
+                <div style={{ fontSize: '12px', color: '#6b7280', lineHeight: '1.2' }}>
+                  {ltiContext.courseName}
+                </div>
+              </div>
+            </div>
+            <Spacer />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Badge label={ltiContext.role} color={ltiContext.role === 'Instructor' ? 'info' : 'success'} />
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '14px', fontWeight: '500', color: '#111827' }}>
+                  {ltiContext.userName}
+                </div>
+                <div style={{ fontSize: '11px', color: '#9ca3af' }}>
+                  LTI 1.3 • SSO Active
+                </div>
+              </div>
+            </div>
+          </Row>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div style={{ padding: '1.5rem', maxWidth: '900px', margin: '0 auto' }}>
+        <Card size="md">
         <Col gap={3}>
           <Row>
             <Title value="Class Assist" size="sm" />
@@ -250,6 +366,17 @@ function App() {
           )}
         </Col>
       </Card>
+
+        {/* Chat Assistant */}
+        <div style={{ marginTop: '1rem' }}>
+          <ChatPanel
+            userId={ltiContext.userId}
+            courseId={courseId}
+            role={viewMode}
+            initialMessage={chatInitialMessage}
+          />
+        </div>
+      </div>
     </div>
   );
 }
