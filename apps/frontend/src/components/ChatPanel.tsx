@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { sendMessage, ChatResponse } from '../lib/api';
 import { Card, Col, Row, Text, Divider, Button, Spacer } from './ui';
 
@@ -135,9 +136,15 @@ export function ChatPanel({ userId, courseId, role, initialMessage }: ChatPanelP
                   color: message.role === 'user' ? '#fff' : '#111827',
                 }}
               >
-                <p style={{ margin: 0, whiteSpace: 'pre-wrap', fontSize: '14px', lineHeight: '1.5' }}>
-                  {message.content}
-                </p>
+                {message.role === 'user' ? (
+                  <p style={{ margin: 0, whiteSpace: 'pre-wrap', fontSize: '14px', lineHeight: '1.5' }}>
+                    {message.content}
+                  </p>
+                ) : (
+                  <div className="markdown-content">
+                    <ReactMarkdown>{message.content}</ReactMarkdown>
+                  </div>
+                )}
               </div>
               <span
                 style={{
@@ -208,6 +215,97 @@ export function ChatPanel({ userId, courseId, role, initialMessage }: ChatPanelP
         @keyframes pulse {
           0%, 100% { opacity: 0.4; }
           50% { opacity: 1; }
+        }
+
+        .markdown-content {
+          font-size: 14px;
+          line-height: 1.6;
+          color: #111827;
+        }
+
+        .markdown-content p {
+          margin: 0 0 8px 0;
+        }
+
+        .markdown-content p:last-child {
+          margin-bottom: 0;
+        }
+
+        .markdown-content strong {
+          font-weight: 600;
+          color: #1f2937;
+        }
+
+        .markdown-content em {
+          font-style: italic;
+        }
+
+        .markdown-content ul, .markdown-content ol {
+          margin: 8px 0;
+          padding-left: 24px;
+        }
+
+        .markdown-content li {
+          margin: 4px 0;
+        }
+
+        .markdown-content code {
+          background-color: #e5e7eb;
+          padding: 2px 6px;
+          border-radius: 4px;
+          font-family: 'Monaco', 'Courier New', monospace;
+          font-size: 13px;
+          color: #dc2626;
+        }
+
+        .markdown-content pre {
+          background-color: #1f2937;
+          color: #f9fafb;
+          padding: 12px;
+          border-radius: 6px;
+          overflow-x: auto;
+          margin: 8px 0;
+        }
+
+        .markdown-content pre code {
+          background-color: transparent;
+          color: #f9fafb;
+          padding: 0;
+        }
+
+        .markdown-content h1, .markdown-content h2, .markdown-content h3 {
+          font-weight: 600;
+          margin: 12px 0 8px 0;
+          color: #1f2937;
+        }
+
+        .markdown-content h1 {
+          font-size: 18px;
+        }
+
+        .markdown-content h2 {
+          font-size: 16px;
+        }
+
+        .markdown-content h3 {
+          font-size: 15px;
+        }
+
+        .markdown-content blockquote {
+          border-left: 3px solid #d1d5db;
+          padding-left: 12px;
+          margin: 8px 0;
+          color: #6b7280;
+          font-style: italic;
+        }
+
+        .markdown-content a {
+          color: #2563eb;
+          text-decoration: underline;
+        }
+
+        .markdown-content a:hover {
+          color: #1d4ed8;
         }
       `}</style>
     </Card>
